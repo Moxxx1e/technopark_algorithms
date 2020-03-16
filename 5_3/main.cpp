@@ -110,7 +110,7 @@ int main()
     int number_of_segments = 0;
     std::cin >> number_of_segments;
 
-    int arr_size = number_of_segments*2;
+    int arr_size = number_of_segments * 2;
 
     Point points_array[arr_size];
 
@@ -123,11 +123,10 @@ int main()
             points_array[i].status = -points_array[i-1].status;
     }
 
-    mergesort(points_array,0, arr_size-1, my_greater_equal);
+    mergesort(points_array,0, arr_size - 1, my_greater_equal);
 
     int length = find_length(points_array, arr_size);
     std::cout << length;
 
     return 0;
 }
-

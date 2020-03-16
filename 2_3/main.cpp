@@ -21,6 +21,7 @@ int binary_search(int* array, int left, int right, int value)
         else
             left = mid;
     }
+
     if (array[right] == value)
         return right;
     else if (array[left] == value)
@@ -29,7 +30,7 @@ int binary_search(int* array, int left, int right, int value)
         return -1;
 }
 
-void task_sol(int* A, int* B, int size_A, int size_B)
+void find_intersection(int* A, int* B, int size_A, int size_B)
 {
     int l = 0;
     int r = 1;
@@ -44,24 +45,19 @@ void task_sol(int* A, int* B, int size_A, int size_B)
         else
         {
             if (B[i] > A[size_A - 1])
-            {
                 break;
-            }
+
             while(B[i] > A[r])
             {
                 l = r;
                 r *= 2;
                 if (r > size_A - 1)
-                {
                     r = size_A - 1;
-                }
             }
             index_in_A = binary_search(A, l, r, B[i]);
         }
         if (index_in_A != -1)
-        {
             std::cout << A[index_in_A] << " ";
-        }
     }
 }
 
@@ -80,16 +76,13 @@ int main()
 
     //std::cout << "Введите массив A: ";
     for (int i = 0; i < size_A; ++i)
-    {
         std::cin >> A[i];
-    }
+
     //std::cout << "Введите массив B: ";
     for (int i = 0; i < size_B; ++i)
-    {
         std::cin >> B[i];
-    }
 
-    task_sol(A, B, size_A, size_B);
+    find_intersection(A, B, size_A, size_B);
 
     return 0;
 }

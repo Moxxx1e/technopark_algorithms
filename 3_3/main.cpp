@@ -5,14 +5,12 @@
  * Реализовать очередь с помощью двух стеков. Использовать стек, реализованный с помощью динамического буфера.
  */
 
-class Stack{
+class Stack {
 public:
-    //Stack();
-    ~Stack(){
+    ~Stack()
+    {
         while (!isEmpty())
-        {
             Pop();
-        }
     }
 
     void Push(int value)
@@ -36,16 +34,12 @@ private:
     std::vector<int> dyn_array;
 };
 
-class Queue{
+class Queue {
 public:
-    //Queue();
-
     ~Queue()
     {
-        while(!isEmpty())
-        {
+        while (!isEmpty())
             Dequeue();
-        }
     }
 
     void Enqueue(int val)
@@ -56,16 +50,11 @@ public:
     int Dequeue()
     {
         if (isEmpty())
-        {
             return -1;
-        }
+
         if (stack_2.isEmpty())
-        {
             while (!stack_1.isEmpty())
-            {
                 stack_2.Push(stack_1.Pop());
-            }
-        }
 
         return stack_2.Pop();
     }
@@ -80,7 +69,8 @@ private:
     Stack stack_2;
 };
 
-int main() {
+int main()
+{
     int command = 0;
     int number_of_commands = 0;
     std::cin >> number_of_commands;
@@ -106,9 +96,7 @@ int main() {
             int read_value = 0;
             std::cin >> read_value;
             if (read_value == value)
-            {
                 counter_success++;
-            }
         }
     }
 
