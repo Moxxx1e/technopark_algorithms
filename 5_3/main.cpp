@@ -19,17 +19,72 @@ struct Point{
     int status;
 };
 
-void sort(Point* array, int arr_size)
+bool my_greater_equal(const Point p1, const Point p2)
 {
-    for (int i = 0; i < arr_size - 1; i++)
+    return  p1.value >= p2.value;
+}
+
+template <typename T, typename Comparator = std::greater_equal<T>>
+void mergesort(T* arr, int l, int r, Comparator cmp)
+{
+    if (l < r)
     {
-        for (int j = 0; j < arr_size - 1; j++)
+        int m = l + (r - l)/2;
+
+        mergesort(arr, l, m, cmp);
+        mergesort(arr, m+1, r, cmp);
+
+        merge(arr, l, m, r, cmp);
+    }
+}
+
+template <typename T, typename Comparator = std::greater_equal<T>>
+void merge(T* arr, int l, int m, int r, Comparator cmp)
+{
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    T L[n1];
+    T R[n2];
+
+    int i, j, k;
+    for (i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+
+    for (j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
+
+    i = 0;
+    j = 0;
+    k = l;
+
+    while(i < n1 && j < n2)
+    {
+        if (cmp(R[j], L[i]))
         {
-            if (array[j].value > array[j+1].value)
-            {
-                std::swap(array[j], array[j+1]);
-            }
+            arr[k] = L[i];
+            i++;
         }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
     }
 }
 
@@ -37,23 +92,15 @@ int find_length(Point* points_array, int arr_size)
 {
     int length = 0;
     int thickness = 0;
-
-    if (arr_size == 2 && points_array[0].status == 1 && points_array[1].status == -1)
-    {
-        return points_array[1].value - points_array[0].value;
-    }
-
     for (int i = 0; i < arr_size; i++)
     {
+        if (thickness && i >= 0)
+            length += points_array[i].value - points_array[i-1].value;
+
         if (points_array[i].status == 1)
             thickness++;
         else
             thickness--;
-
-        if (thickness > 0 && i >= 1)
-        {
-            length += points_array[i].value - points_array[i-1].value;
-        }
     }
     return length;
 }
@@ -67,7 +114,8 @@ int main()
 
     Point points_array[arr_size];
 
-    for (int i = 0; i < arr_size; ++i) {
+    for (int i = 0; i < arr_size; ++i)
+    {
         std::cin >> points_array[i].value;
         if (i == 0)
             points_array[i].status = 1;
@@ -75,7 +123,8 @@ int main()
             points_array[i].status = -points_array[i-1].status;
     }
 
-    sort(points_array, arr_size);
+    mergesort(points_array,0, arr_size-1, my_greater_equal);
+
     int length = find_length(points_array, arr_size);
     std::cout << length;
 
