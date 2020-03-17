@@ -63,9 +63,7 @@ void print_list(Node* head)
     Node* cur = head;
     std::cout << cur->value << " ";
     for (cur = head->next; cur != head; cur = cur->next)
-    {
         std::cout << cur->value << " ";
-    }
 }
 
 void free_list(Node* head)
