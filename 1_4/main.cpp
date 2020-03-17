@@ -99,7 +99,6 @@ int main()
     Node* head = nullptr;
     for (int i = 1; i <= N; ++i)
     {
-        int new_value = 0;
         Node *new_node = create_node(i);
         head = append_node(head, new_node);
     }
