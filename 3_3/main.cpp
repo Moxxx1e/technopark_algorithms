@@ -61,6 +61,15 @@ public:
 
         T return_value = data[len];
 
+        if (len < allocated/EXTENSION_KOEF)
+        {
+            T* tmp = (T*)realloc(data,  sizeof(T)*allocated/EXTENSION_KOEF);
+            if (!tmp)
+                return return_value;
+            allocated /= EXTENSION_KOEF;
+            data = tmp;
+        }
+
         return return_value;
     }
 
