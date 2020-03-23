@@ -5,7 +5,85 @@
  * Реализовать очередь с помощью двух стеков. Использовать стек, реализованный с помощью динамического буфера.
  */
 
-class Stack {
+#define INIT_ALLOC 5
+#define EXTENSION_KOEF 2
+
+template <typename T>
+class Vector{
+public:
+    Vector()
+    {
+        data = NULL;
+        len = 0;
+        allocated = INIT_ALLOC;
+    }
+
+    ~Vector()
+    {
+        len = 0;
+        allocated = 0;
+        if (data)
+            free(data);
+    }
+
+    void push_back(T value)
+    {
+        if (!data)
+        {
+            data = (T*)malloc(allocated * sizeof(T));
+            if (!data)
+                return;
+        }
+        else
+        {
+            if (len >= allocated)
+            {
+                allocated *= EXTENSION_KOEF;
+                T* tmp = (T*)realloc(data, allocated * sizeof(T));
+                if (!tmp)
+                {
+                    free(data);
+                    return;
+                }
+                data = tmp;
+            }
+        }
+        data[len] = value;
+        len++;
+    }
+
+    T pop_back()
+    {
+        if (!isEmpty())
+            len--;
+        else
+            return -1;
+
+        T return_value = data[len];
+
+        return return_value;
+    }
+
+    bool isEmpty()
+    {
+        return len == 0;
+    }
+
+    T back()
+    {
+        if (isEmpty())
+            return -1;
+
+        return data[len - 1];
+    }
+
+private:
+    T* data;
+    int len;
+    size_t allocated;
+};
+
+class Stack{
 public:
     ~Stack()
     {
@@ -20,6 +98,8 @@ public:
 
     int Pop()
     {
+        if (isEmpty())
+            return -1;
         int pop_element = dyn_array.back();
         dyn_array.pop_back();
         return pop_element;
@@ -27,19 +107,21 @@ public:
 
     bool isEmpty()
     {
-        return dyn_array.empty();
+        return dyn_array.isEmpty();
     }
 
 private:
-    std::vector<int> dyn_array;
+    Vector<int> dyn_array;
 };
 
-class Queue {
+class Queue{
 public:
     ~Queue()
     {
-        while (!isEmpty())
+        while(!isEmpty())
+        {
             Dequeue();
+        }
     }
 
     void Enqueue(int val)
@@ -53,8 +135,12 @@ public:
             return -1;
 
         if (stack_2.isEmpty())
+        {
             while (!stack_1.isEmpty())
+            {
                 stack_2.Push(stack_1.Pop());
+            }
+        }
 
         return stack_2.Pop();
     }
@@ -69,8 +155,7 @@ private:
     Stack stack_2;
 };
 
-int main()
-{
+int main() {
     int command = 0;
     int number_of_commands = 0;
     std::cin >> number_of_commands;
@@ -96,7 +181,9 @@ int main()
             int read_value = 0;
             std::cin >> read_value;
             if (read_value == value)
+            {
                 counter_success++;
+            }
         }
     }
 
