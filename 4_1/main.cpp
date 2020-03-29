@@ -1,6 +1,7 @@
 #include <iostream>
 #include "algorithm"
 #include "vector"
+#include "assert.h"
 
 /*
  * Решение всех задач данного раздела предполагает использование кучи, реализованной в виде класса.
@@ -33,64 +34,27 @@ public:
     {
         vector.push_back(value);
 
-        int i = vector.size() - 1;
-        int parent = (i-1)/2;
-
-        while(i > 0 && vector[i] > vector[parent])
-        {
-            std::swap(vector[i], vector[parent]);
-            i = parent;
-            parent = (i-1)/2;
-        }
-
-        if (i >= 1 && vector[i-1] > vector[i])
-            std::swap(vector[i], vector[i-1]);
+        SiftUp(vector.size() - 1);
     }
 
     T RemoveMax()
     {
-        if (isEmpty())
-            return -1;
+        assert(!isEmpty());
 
         T max_element = vector.front();
-        std::swap(vector.back(), vector.front());
+        vector.front() = vector.back();
 
         vector.pop_back();
 
         if (!isEmpty())
-            Heapify(0);
+            SiftDown(0);
 
         return max_element;
     }
 
-    void Heapify(int i)
+    T GetMax()
     {
-        int left_child;
-        int right_child;
-        int largest_child;
-
-        for(; ; )
-        {
-            left_child = 2*i + 1;
-            right_child = 2*i + 2;
-            largest_child = i;
-
-            if (left_child < vector.size()-1 && vector[largest_child] < vector[left_child])
-                largest_child = left_child;
-            else if (right_child < vector.size()-1 && vector[largest_child] < vector[right_child])
-                largest_child = right_child;
-
-            if (largest_child == i)
-                break;
-
-            std::swap(vector[largest_child], vector[i]);
-            i = largest_child;
-        }
-    }
-
-    T Get_max()
-    {
-        if (vector.empty())
+        if (isEmpty())
             return -1;
         return vector.front();
     }
@@ -101,6 +65,36 @@ public:
     }
 
 private:
+    void SiftUp(int index)
+    {
+        while (index > 0)
+        {
+            int parent = (index - 1)/2;
+            if (vector[index] <= vector[parent])
+                return;
+            std::swap(vector[index], vector[parent]);
+            index = parent;
+        }
+    }
+
+    void SiftDown(int i)
+    {
+        int left_child = 2*i + 1;
+        int right_child = 2*i + 2;
+        int largest_child = i;
+
+        if (left_child < vector.size() && vector[i] < vector[left_child])
+            largest_child = left_child;
+        if (right_child < vector.size() && vector[largest_child] < vector[right_child])
+            largest_child = right_child;
+
+        if (largest_child != i)
+        {
+            std::swap(vector[largest_child], vector[i]);
+            SiftDown(largest_child);
+        }
+    }
+
     std::vector<T> vector;
 };
 
@@ -114,7 +108,7 @@ int calc_iterations(Heap<int> heap, int carr_capacity)
 
         while(true)
         {
-            int tmp_element = heap.Get_max();
+            int tmp_element = heap.GetMax();
             if (tmp_element == -1)
                 break;
 
