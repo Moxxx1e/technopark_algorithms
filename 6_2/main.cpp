@@ -24,43 +24,70 @@
  * Функцию Partition реализуйте методом прохода двумя итераторами от конца массива к началу.
  */
 
-int median(int first, int mid, int last)
+template <typename T>
+class Comparator {
+public:
+    bool isLess(T left, T right)
+    {
+        return left < right;
+    }
+    bool isGreater(T left, T right)
+    {
+        return left > right;
+    }
+    bool isLessEqual(T left, T right)
+    {
+        return left <= right;
+    }
+    bool isGreaterEqual(T left, T right)
+    {
+        return left >= right;
+    }
+    bool isEqual(T left, T right)
+    {
+        return left == right;
+    }
+};
+
+template <typename T, class Cmp = Comparator<T> >
+void swap_pivot_and_first(T pivot, T* array, int l, int mid, int r, Cmp cmp)
 {
-    if (first <= mid && first >= last)
+    if (cmp.isEqual(pivot, array[r]))
+        std::swap(array[r], array[l]);
+    else if (cmp.isEqual(pivot, array[mid]))
+        std::swap(array[mid], array[l]);
+}
+
+template <typename T, class Cmp = Comparator<T> >
+T median(T first, T mid, T last, Cmp cmp)
+{
+    if (cmp.isLessEqual(first, mid) && cmp.isGreaterEqual(first, last))
         return first;
-    else if (first >= mid && first <= last)
+    else if (cmp.isGreaterEqual(first, mid) && cmp.isLessEqual(first, last))
         return first;
-    else if (mid >= first && mid <= last)
+    else if (cmp.isGreaterEqual(mid, first) && cmp.isLessEqual(mid, last))
         return mid;
-    else if (mid <= first && mid >= last)
+    else if (cmp.isLessEqual(mid, first) && cmp.isGreaterEqual(mid, last))
         return mid;
     else
         return last;
 }
 
-void swap_pivot_and_first(int pivot, int* array, int l, int mid, int r)
-{
-    if (pivot == array[r])
-        std::swap(array[r], array[l]);
-    else if (pivot == array[mid])
-        std::swap(array[mid], array[l]);
-}
-
-int partition(int* array, int l, int r)
+template <typename T, class Cmp = Comparator<T> >
+int partition(T* array, int l, int r, Cmp cmp)
 {
     int mid = (l + r) / 2;
-    int pivot = median(array[l], array[mid], array[r]);
-    swap_pivot_and_first(pivot, array, l, mid, r);
+    int pivot = median(array[l], array[mid], array[r], cmp);
+    swap_pivot_and_first(pivot, array, l, mid, r, cmp);
 
     int i = r, j = i - 1;
-
-    while (array[i] > pivot && j > 0) {
+    while (cmp.isGreater(array[i], pivot) && j > 0) {
         i--;
         j--;
     }
 
     while (j > 0) {
-        while (array[j] <= pivot && j > 0) {
+        while (cmp.isLessEqual(array[j], pivot) && j > 0) {
             j--;
         }
 
@@ -75,12 +102,13 @@ int partition(int* array, int l, int r)
     return i;
 }
 
-int kth_statistic(int* array, int size, int k)
+template <typename T, class Cmp = Comparator<T> >
+T kth_statistic(T* array, int size, int k, Cmp cmp = Cmp())
 {
     int l = 0;
     int r = size - 1;
     while (1) {
-        int pivot_pos = partition(array, l, r);
+        int pivot_pos = partition(array, l, r, cmp);
         if (pivot_pos == k) {
             return array[pivot_pos];
         }
