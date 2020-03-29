@@ -21,32 +21,32 @@
  */
 
 template <typename T>
-class Comparator{
+class Comparator {
 public:
-    bool isLess(const T &left, const T &right)
+    bool isLess(const T& left, const T& right)
     {
-       return left < right;
+        return left < right;
     }
-    bool isGreater(const T &left, const T &right)
+    bool isGreater(const T& left, const T& right)
     {
         return left > right;
     }
-    bool isLessEqual(const T &left, const T &right)
+    bool isLessEqual(const T& left, const T& right)
     {
         return left <= right;
     }
-    bool isGreaterEqual(const T &left, const T &right)
+    bool isGreaterEqual(const T& left, const T& right)
     {
         return left >= right;
     }
 };
 
-template <typename T, class Compare = Comparator<T>>
-class Heap{
+template <typename T, class Compare = Comparator<T> >
+class Heap {
 public:
     ~Heap()
     {
-        while(!isEmpty())
+        while (!isEmpty())
             vector.pop_back();
     }
 
@@ -87,9 +87,8 @@ public:
 private:
     void SiftUp(int index)
     {
-        while (index > 0)
-        {
-            int parent = (index - 1)/2;
+        while (index > 0) {
+            int parent = (index - 1) / 2;
             if (comparator.isLessEqual(vector[index], vector[parent]))
                 return;
             std::swap(vector[index], vector[parent]);
@@ -99,8 +98,8 @@ private:
 
     void SiftDown(int i)
     {
-        int left_child = 2*i + 1;
-        int right_child = 2*i + 2;
+        int left_child = 2 * i + 1;
+        int right_child = 2 * i + 2;
         int largest_child = i;
 
         if (left_child < vector.size() && comparator.isLess(vector[i], vector[left_child]))
@@ -108,8 +107,7 @@ private:
         if (right_child < vector.size() && comparator.isLess(vector[largest_child], vector[right_child]))
             largest_child = right_child;
 
-        if (largest_child != i)
-        {
+        if (largest_child != i) {
             std::swap(vector[largest_child], vector[i]);
             SiftDown(largest_child);
         }
@@ -122,13 +120,11 @@ private:
 int calc_iterations(Heap<int> heap, int carr_capacity)
 {
     int counter = 0;
-    while(!heap.isEmpty())
-    {
+    while (!heap.isEmpty()) {
         int control_sum = 0;
         std::vector<int> bufer;
 
-        while(true)
-        {
+        while (true) {
             int tmp_element = heap.GetMax();
             if (tmp_element == -1)
                 break;
@@ -141,10 +137,8 @@ int calc_iterations(Heap<int> heap, int carr_capacity)
             control_sum += tmp_element;
         }
 
-        for(int & i : bufer)
-        {
-            if (i != 1)
-            {
+        for (int& i : bufer) {
+            if (i != 1) {
                 i /= 2;
                 heap.Add(i);
             }
@@ -164,8 +158,7 @@ int main()
 
     int mass = 0;
     //std::cout << "Input masses of fruits: ";
-    for (int i = 0; i < number_of_fruits; i++)
-    {
+    for (int i = 0; i < number_of_fruits; i++) {
         std::cin >> mass;
         heap.Add(mass);
     }
