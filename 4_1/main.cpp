@@ -20,8 +20,28 @@
  * Формат выходных данных. Неотрицательное число - количество подходов к корзине.
  */
 
-
 template <typename T>
+class Comparator{
+public:
+    bool isLess(const T &left, const T &right)
+    {
+       return left < right;
+    }
+    bool isGreater(const T &left, const T &right)
+    {
+        return left > right;
+    }
+    bool isLessEqual(const T &left, const T &right)
+    {
+        return left <= right;
+    }
+    bool isGreaterEqual(const T &left, const T &right)
+    {
+        return left >= right;
+    }
+};
+
+template <typename T, class Compare = Comparator<T>>
 class Heap{
 public:
     ~Heap()
@@ -70,7 +90,7 @@ private:
         while (index > 0)
         {
             int parent = (index - 1)/2;
-            if (vector[index] <= vector[parent])
+            if (comparator.isLessEqual(vector[index], vector[parent]))
                 return;
             std::swap(vector[index], vector[parent]);
             index = parent;
@@ -83,9 +103,9 @@ private:
         int right_child = 2*i + 2;
         int largest_child = i;
 
-        if (left_child < vector.size() && vector[i] < vector[left_child])
+        if (left_child < vector.size() && comparator.isLess(vector[i], vector[left_child]))
             largest_child = left_child;
-        if (right_child < vector.size() && vector[largest_child] < vector[right_child])
+        if (right_child < vector.size() && comparator.isLess(vector[largest_child], vector[right_child]))
             largest_child = right_child;
 
         if (largest_child != i)
@@ -96,6 +116,7 @@ private:
     }
 
     std::vector<T> vector;
+    Compare comparator;
 };
 
 int calc_iterations(Heap<int> heap, int carr_capacity)
@@ -136,20 +157,20 @@ int calc_iterations(Heap<int> heap, int carr_capacity)
 int main()
 {
     int number_of_fruits = 0;
-    std::cout << "Input number of fruits: ";
+    //std::cout << "Input number of fruits: ";
     std::cin >> number_of_fruits;
 
     Heap<int> heap;
 
     int mass = 0;
-    std::cout << "Input masses of fruits: ";
+    //std::cout << "Input masses of fruits: ";
     for (int i = 0; i < number_of_fruits; i++)
     {
         std::cin >> mass;
         heap.Add(mass);
     }
 
-    std::cout << "Input Vovochka carrying capacity: ";
+    //std::cout << "Input Vovochka carrying capacity: ";
     int carr_capacity = 0;
     std::cin >> carr_capacity;
 
