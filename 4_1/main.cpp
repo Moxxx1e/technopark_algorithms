@@ -190,7 +190,7 @@ int calc_iterations(Heap<int>* heap, int carr_capacity)
     int counter = 0;
     while (!(*heap).isEmpty()) {
         int control_sum = 0;
-        std::vector<int> bufer;
+        Vector<int> bufer;
 
         while (true) {
             int tmp_element = (*heap).GetMax();
@@ -204,10 +204,10 @@ int calc_iterations(Heap<int>* heap, int carr_capacity)
             control_sum += tmp_element;
         }
 
-        for (int& i : bufer) {
-            if (i != 1) {
-                i /= 2;
-                (*heap).Add(i);
+        for (int i = 0; i < bufer.size(); i++) {
+            if (bufer[i] != 1) {
+                bufer[i] /= 2;
+                (*heap).Add(bufer[i]);
             }
         }
         counter++;
