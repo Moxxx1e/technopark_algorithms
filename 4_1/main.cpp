@@ -41,15 +41,83 @@ public:
     }
 };
 
+#define INIT_ALLOC 5
+#define EXTENSION_KOEF 2
+template <typename T>
+class Vector{
+public:
+    Vector()
+    {
+        data = nullptr;
+        len = 0;
+        allocated = 0;
+    }
+
+    ~Vector(){
+        delete[] data;
+    }
+
+    void push_back(T value)
+    {
+        if (len == allocated)
+            expand();
+        assert(len < allocated && data != nullptr);
+        data[len++] = value;
+    }
+
+    void pop_back()
+    {
+        assert(!isEmpty());
+        len--;
+    }
+
+    bool isEmpty()
+    {
+        return len == 0;
+    }
+
+    T& front()
+    {
+        assert(!isEmpty());
+        return data[0];
+    }
+
+    T& back()
+    {
+        assert(!isEmpty());
+        return data[len - 1];
+    }
+
+    T& operator[](int i)
+    {
+        assert(i >= 0 && i < len && !isEmpty());
+        return data[i];
+    }
+
+    int size()
+    {
+        return len;
+    }
+
+private:
+    void expand()
+    {
+        int new_allocated = std::max(allocated * EXTENSION_KOEF, INIT_ALLOC);
+        T* new_data = new T[new_allocated];
+        std::copy(data, data + len, new_data);
+        delete[] data;
+        data = new_data;
+        allocated = new_allocated;
+    }
+
+    T* data;
+    int len;
+    int allocated;
+};
+
 template <typename T, class Compare = Comparator<T> >
 class Heap {
 public:
-    ~Heap()
-    {
-        while (!isEmpty())
-            vector.pop_back();
-    }
-
     void Add(T value)
     {
         vector.push_back(value);
@@ -81,7 +149,7 @@ public:
 
     bool isEmpty()
     {
-        return vector.empty();
+        return vector.isEmpty();
     }
 
 private:
@@ -113,26 +181,25 @@ private:
         }
     }
 
-    std::vector<T> vector;
+    Vector<T> vector;
     Compare comparator;
 };
 
-int calc_iterations(Heap<int> heap, int carr_capacity)
+int calc_iterations(Heap<int>* heap, int carr_capacity)
 {
     int counter = 0;
-    while (!heap.isEmpty()) {
+    while (!(*heap).isEmpty()) {
         int control_sum = 0;
         std::vector<int> bufer;
 
         while (true) {
-            int tmp_element = heap.GetMax();
+            int tmp_element = (*heap).GetMax();
             if (tmp_element == -1)
                 break;
 
             if (control_sum + tmp_element > carr_capacity)
                 break;
-
-            heap.RemoveMax();
+            (*heap).RemoveMax();
             bufer.push_back(tmp_element);
             control_sum += tmp_element;
         }
@@ -140,7 +207,7 @@ int calc_iterations(Heap<int> heap, int carr_capacity)
         for (int& i : bufer) {
             if (i != 1) {
                 i /= 2;
-                heap.Add(i);
+                (*heap).Add(i);
             }
         }
         counter++;
@@ -167,7 +234,7 @@ int main()
     int carr_capacity = 0;
     std::cin >> carr_capacity;
 
-    int result = calc_iterations(heap, carr_capacity);
+    int result = calc_iterations(&heap, carr_capacity);
     std::cout << result;
 
     return 0;
