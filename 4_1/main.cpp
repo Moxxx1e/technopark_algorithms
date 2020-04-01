@@ -23,6 +23,11 @@
 template <typename T>
 class Comparator {
 public:
+    bool operator()(const T& left, const T& right)
+    {
+        return left < right;
+    }
+
     bool isLess(const T& left, const T& right)
     {
         return left < right;
@@ -157,7 +162,7 @@ private:
     {
         while (index > 0) {
             int parent = (index - 1) / 2;
-            if (comparator.isLessEqual(vector[index], vector[parent]))
+            if (comparator(vector[index], vector[parent]) || vector[index] == vector[parent])
                 return;
             std::swap(vector[index], vector[parent]);
             index = parent;
@@ -170,9 +175,9 @@ private:
         int right_child = 2 * i + 2;
         int largest_child = i;
 
-        if (left_child < vector.size() && comparator.isLess(vector[i], vector[left_child]))
+        if (left_child < vector.size() && comparator(vector[i], vector[left_child]))
             largest_child = left_child;
-        if (right_child < vector.size() && comparator.isLess(vector[largest_child], vector[right_child]))
+        if (right_child < vector.size() && comparator(vector[largest_child], vector[right_child]))
             largest_child = right_child;
 
         if (largest_child != i) {
