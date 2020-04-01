@@ -27,47 +27,52 @@
 template <typename T>
 class Comparator {
 public:
-    bool isLess(T left, T right)
+    bool operator()(const T& left, const T& right)
     {
         return left < right;
     }
-    bool isGreater(T left, T right)
+
+    bool isLess(const T& left, const T& right)
+    {
+        return left < right;
+    }
+    bool isGreater(const T& left, const T& right)
     {
         return left > right;
     }
-    bool isLessEqual(T left, T right)
+    bool isLessEqual(const T& left, const T& right)
     {
         return left <= right;
     }
-    bool isGreaterEqual(T left, T right)
+    bool isGreaterEqual(const T& left, const T& right)
     {
         return left >= right;
     }
-    bool isEqual(T left, T right)
+    bool isEqual(const T& left, const T& right)
     {
         return left == right;
     }
 };
 
 template <typename T, class Cmp = Comparator<T> >
-void swap_pivot_and_first(T pivot, T* array, int l, int mid, int r, Cmp cmp)
+void swap_pivot_and_first(T pivot, T* array, int l, int mid, int r)
 {
-    if (cmp.isEqual(pivot, array[r]))
+    if (pivot == array[r])
         std::swap(array[r], array[l]);
-    else if (cmp.isEqual(pivot, array[mid]))
+    else if (pivot == array[mid])
         std::swap(array[mid], array[l]);
 }
 
 template <typename T, class Cmp = Comparator<T> >
 T median(T first, T mid, T last, Cmp cmp)
 {
-    if (cmp.isLessEqual(first, mid) && cmp.isGreaterEqual(first, last))
+    if (!cmp(mid, first) && !cmp(first, last))
         return first;
-    else if (cmp.isGreaterEqual(first, mid) && cmp.isLessEqual(first, last))
+    else if (!cmp(first, mid) && !cmp(last, first))
         return first;
-    else if (cmp.isGreaterEqual(mid, first) && cmp.isLessEqual(mid, last))
+    else if (!cmp(mid, first) && !cmp(last, mid))
         return mid;
-    else if (cmp.isLessEqual(mid, first) && cmp.isGreaterEqual(mid, last))
+    else if (!cmp(first, mid) && !cmp(mid, last))
         return mid;
     else
         return last;
@@ -78,16 +83,16 @@ int partition(T* array, int l, int r, Cmp cmp)
 {
     int mid = (l + r) / 2;
     int pivot = median(array[l], array[mid], array[r], cmp);
-    swap_pivot_and_first(pivot, array, l, mid, r, cmp);
+    swap_pivot_and_first(pivot, array, l, mid, r);
 
     int i = r, j = i - 1;
-    while (cmp.isGreater(array[i], pivot) && j > 0) {
+    while (cmp(pivot, array[i]) && j > 0) {
         i--;
         j--;
     }
 
     while (j > 0) {
-        while (cmp.isLessEqual(array[j], pivot) && j > 0) {
+        while (!cmp(pivot, array[j]) && j > 0) {
             j--;
         }
 
