@@ -7,17 +7,9 @@
  * Отсортировать массив методом поразрядной сортировки LSD по байтам.
  */
 
-int digit(long long number, int i)
+int digit(long long number, int byte_num)
 {
-    int j = 0;
-    while (number > 0) {
-        int ost = number % 10;
-        if (i == j)
-            return ost;
-        number /= 10;
-        j++;
-    }
-    return 0;
+    return (number >> (byte_num * 8)) & 0xFF;
 }
 
 void fill_zeros(int* array, int size)
@@ -26,8 +18,8 @@ void fill_zeros(int* array, int size)
         array[i] = 0;
 }
 
-#define ALPHABET_SIZE 10
-#define CAPACITY 19
+#define ALPHABET_SIZE 255
+#define CAPACITY 8
 void lsd_sort(long long* array, int arr_size)
 {
     int digit_index_array[ALPHABET_SIZE];
