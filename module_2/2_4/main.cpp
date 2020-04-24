@@ -2,8 +2,6 @@
 
 using namespace std;
 
-// 2_4. Выведите элементы в порядке level-order (по слоям, “в ширину”).
-
 template <typename T>
 class TreeNode {
 public:
@@ -15,13 +13,23 @@ public:
     TreeNode* parent;
 };
 
+template <typename T>
+class Comparator {
+public:
+    bool operator()(const T& left, const T& right)
+    {
+        return left < right;
+    }
+};
+
 template <typename T, typename Comparator>
 class BinaryTree {
 public:
     BinaryTree(): root(), isEmpty(true) {}
 
-    void Add(const T& newElement) {
-        TreeNode<T>* newNode = new TreeNode<T>(newElement);
+    void Add(const T& newElement)
+    {
+        auto* newNode = new TreeNode<T>(newElement);
 
         if (isEmpty) {
             root = newNode;
@@ -31,7 +39,7 @@ public:
 
         TreeNode<T>* tmp = root;
         while (newNode->parent == nullptr) {
-            if (newElement > tmp->value) {
+            if (!cmp(newElement, tmp->value)) {
                 if (tmp->right == nullptr) {
                     tmp->right = newNode;
                     newNode->parent = tmp->right;
@@ -50,7 +58,8 @@ public:
 
     }
 
-    void BFS() {
+    void BFS()
+    {
         queue<TreeNode<T>*> queue;
         TreeNode<T>* tmp = root;
         queue.push(tmp);
@@ -69,17 +78,14 @@ public:
 private:
     TreeNode<T> *root;
     bool isEmpty;
-};
-
-class Comparator {
-
+    Comparator cmp;
 };
 
 int main() {
     int n;
     cin >> n;
 
-    BinaryTree<int, Comparator> tree;
+    BinaryTree<int, Comparator<int>> tree;
     int tmpElement;
     for (int i = 0; i < n; i++) {
         cin >> tmpElement;
