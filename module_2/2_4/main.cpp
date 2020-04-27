@@ -5,8 +5,19 @@ using namespace std;
 template <typename T>
 class TreeNode {
 public:
-    TreeNode(): left(nullptr), right(nullptr) {}
-    explicit TreeNode(T value): value(value), left(nullptr), right(nullptr) {}
+    TreeNode()
+            : left(nullptr)
+            , right(nullptr)
+    {
+    }
+
+    explicit TreeNode(T value)
+            : value(value)
+            , left(nullptr)
+            , right(nullptr)
+    {
+    }
+
     T value;
     TreeNode* left;
     TreeNode* right;
@@ -24,7 +35,11 @@ public:
 template <typename T, typename Comparator>
 class BinaryTree {
 public:
-    BinaryTree(): root(), isEmpty(true) {}
+    BinaryTree()
+            : root()
+            , isEmpty(true)
+    {
+    }
 
     void Add(const T& newElement)
     {
@@ -45,7 +60,8 @@ public:
                 }
                 else
                     tmp = tmp->right;
-            } else {
+            }
+            else {
                 if (tmp->left == nullptr) {
                     tmp->left = newNode;
                     break;
@@ -54,7 +70,6 @@ public:
                     tmp = tmp->left;
             }
         }
-
     }
 
     void BFS()
@@ -75,16 +90,17 @@ public:
     }
 
 private:
-    TreeNode<T> *root;
+    TreeNode<T>* root;
     bool isEmpty;
     Comparator cmp;
 };
 
-int main() {
+int main()
+{
     int n;
     cin >> n;
 
-    BinaryTree<int, Comparator<int>> tree;
+    BinaryTree<int, Comparator<int> > tree;
     int tmpElement;
     for (int i = 0; i < n; i++) {
         cin >> tmpElement;
