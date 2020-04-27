@@ -5,12 +5,11 @@ using namespace std;
 template <typename T>
 class TreeNode {
 public:
-    TreeNode(): left(nullptr), right(nullptr), parent(nullptr) {}
-    explicit TreeNode(T value): value(value), left(nullptr), right(nullptr), parent(nullptr){}
+    TreeNode(): left(nullptr), right(nullptr) {}
+    explicit TreeNode(T value): value(value), left(nullptr), right(nullptr) {}
     T value;
     TreeNode* left;
     TreeNode* right;
-    TreeNode* parent;
 };
 
 template <typename T>
@@ -38,18 +37,18 @@ public:
         }
 
         TreeNode<T>* tmp = root;
-        while (newNode->parent == nullptr) {
+        while (true) {
             if (!cmp(newElement, tmp->value)) {
                 if (tmp->right == nullptr) {
                     tmp->right = newNode;
-                    newNode->parent = tmp->right;
+                    break;
                 }
                 else
                     tmp = tmp->right;
             } else {
                 if (tmp->left == nullptr) {
                     tmp->left = newNode;
-                    newNode->parent = tmp->left;
+                    break;
                 }
                 else
                     tmp = tmp->left;
