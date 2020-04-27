@@ -41,6 +41,22 @@ public:
     {
     }
 
+    ~BinaryTree() {
+        queue<TreeNode<T>*> queue;
+        TreeNode<T>* tmp = root;
+        queue.push(tmp);
+
+        while (!queue.empty()) {
+            tmp = queue.front();
+            queue.pop();
+            if (tmp->left != nullptr)
+                queue.push(tmp->left);
+            if (tmp->right != nullptr)
+                queue.push(tmp->right);
+            delete tmp;
+        }
+    }
+
     void Add(const T& newElement)
     {
         auto* newNode = new TreeNode<T>(newElement);
