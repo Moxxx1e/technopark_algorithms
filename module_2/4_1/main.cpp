@@ -99,6 +99,24 @@ private:
         return tmp;
     }
 
+    TreeNode* findAndRemoveMax(TreeNode* node) {
+        TreeNode* prev = node;
+        TreeNode* tmp = node->right;
+        if (!tmp)
+            return node;
+
+        while (tmp->right) {
+            prev = tmp;
+            tmp = tmp->right;
+        }
+        prev->right = tmp->left;
+
+        balance(node);
+        tmp->left = node;
+
+        return tmp;
+    }
+
     TreeNode* deleteInternal(TreeNode* node, const T& element) {
         if (!node) return nullptr;
         if (element < node->value)
@@ -114,14 +132,13 @@ private:
             if (!right) return left;
 
             TreeNode* newNode;
-            //if (getHeight(left) > getHeight(right)) {
-            //    newNode = findAndDeleteMax(left);
-            //} else {
-            //      newNode = findAndDeleteMin(right);
-            //}
-
-            newNode = findAndRemoveMin(right);
-            newNode->left = left;
+            if (getHeight(left) > getHeight(right)) {
+                newNode = findAndRemoveMax(left);
+                newNode->right = right;
+            } else {
+                newNode = findAndRemoveMin(right);
+                newNode->left = left;
+            }
 
             return balance(newNode);
         }
