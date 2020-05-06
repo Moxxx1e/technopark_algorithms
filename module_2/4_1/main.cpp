@@ -81,19 +81,22 @@ private:
         return balance(node);
     }
 
-    TreeNode* findMin(TreeNode *node)
-    {
-        while (node->left)
-            node = node->left;
-        return node;
-    }
+    TreeNode* findAndRemoveMin(TreeNode* node) {
+        TreeNode* prev = node;
+        TreeNode* tmp = node->left;
+        if (!tmp)
+            return node;
 
-    TreeNode* removeMin(TreeNode *node)
-    {
-        if (!node->left)
-            return node->right;
-        node->left = removeMin(node->left);
-        return balance(node);
+        while (tmp->left) {
+            prev = tmp;
+            tmp = tmp->left;
+        }
+        prev->left = tmp->right;
+
+        balance(node);
+        tmp->right = node;
+
+        return tmp;
     }
 
     TreeNode* deleteInternal(TreeNode* node, const T& element) {
@@ -117,8 +120,7 @@ private:
             //      newNode = findAndDeleteMin(right);
             //}
 
-            newNode = findMin(right);
-            newNode->right = removeMin(right);
+            newNode = findAndRemoveMin(right);
             newNode->left = left;
 
             return balance(newNode);
