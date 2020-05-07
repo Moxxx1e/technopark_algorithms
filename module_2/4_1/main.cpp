@@ -34,18 +34,24 @@ public:
         return false;
     }
 
-    void Add(const T& element) {
-        root = addInternal(root, element);
+    int Add(const T& element) {
+        int index = 0;
+        root = addInternal(root, element, index);
+        return index;
     }
 
-    void Delete(const T& element) {
-        root = deleteInternal(root, element);
+    void Delete(int index) {
+        root = deleteInternal(root, index + 1);
     }
 
 private:
-    size_t getHeight(TreeNode* node) { return node ? node->height : 0; }
+    size_t getHeight(TreeNode* node) {
+        return node ? node->height : 0;
+    }
 
-    size_t getCount(TreeNode* node) { return node ? node->count : 0; }
+    size_t getCount(TreeNode* node) {
+        return node ? node->count : 0;
+    }
 
     void fixHeight(TreeNode* node) {
         size_t heightLeft = getHeight(node->left);
@@ -71,58 +77,46 @@ private:
         }
     }
 
-    TreeNode* addInternal(TreeNode* node, const T& element) {
-        if (!node) return new TreeNode(element);
-        if (element < node->value)
-            node->left = addInternal(node->left, element);
-        else
-            node->right = addInternal(node->right, element);
+    TreeNode* addInternal(TreeNode* node, const T& element, int& index) {
+        if (!node)
+            return new TreeNode(element);
+        if (element < node->value) {
+            index += getCount(node->right) + 1;
+            node->left = addInternal(node->left, element, index);
+        }
+        else if (element > node->value)
+            node->right = addInternal(node->right, element, index);
 
         return balance(node);
     }
 
-    TreeNode* findAndRemoveMin(TreeNode* node) {
-        TreeNode* prev = node;
-        TreeNode* tmp = node->left;
-        if (!tmp)
-            return node;
-
-        while (tmp->left) {
-            prev = tmp;
-            tmp = tmp->left;
+    TreeNode* findAndRemoveMin(TreeNode* node, TreeNode** min) {
+        if (!node->left) {
+            *min = node;
+            return node->right;
         }
-        prev->left = tmp->right;
-
-        balance(node);
-        tmp->right = node;
-
-        return tmp;
+        node->left = findAndRemoveMin(node->left, min);
+        return balance(node);
     }
 
-    TreeNode* findAndRemoveMax(TreeNode* node) {
-        TreeNode* prev = node;
-        TreeNode* tmp = node->right;
-        if (!tmp)
-            return node;
-
-        while (tmp->right) {
-            prev = tmp;
-            tmp = tmp->right;
+    TreeNode* findAndRemoveMax(TreeNode* node, TreeNode** max) {
+        if (!node->right) {
+            *max = node;
+            return node->left;
         }
-        prev->right = tmp->left;
-
-        balance(node);
-        tmp->left = node;
-
-        return tmp;
+        node->right = findAndRemoveMax(node->right, max);
+        return balance(node);
     }
 
-    TreeNode* deleteInternal(TreeNode* node, const T& element) {
-        if (!node) return nullptr;
-        if (element < node->value)
-            node->left = deleteInternal(node->left, element);
-        else if (element > node->value)
-            node->right = deleteInternal(node->right, element);
+    TreeNode* deleteInternal(TreeNode* node, int index) {
+        if (!node || index > getCount(node))
+            return nullptr;
+
+        int tmpIndex = getCount(node->right) + 1;
+        if (index > tmpIndex)
+            node->left = deleteInternal(node->left, index - tmpIndex);
+        else if (index < tmpIndex)
+            node->right = deleteInternal(node->right, index);
         else {
             TreeNode* left = node->left;
             TreeNode* right = node->right;
@@ -131,13 +125,18 @@ private:
 
             if (!right) return left;
 
-            TreeNode* newNode;
+            // newNode = max in left subTree or min in right subTree
+            TreeNode* newNode = nullptr;
+            TreeNode* subTree;
+
             if (getHeight(left) > getHeight(right)) {
-                newNode = findAndRemoveMax(left);
+                subTree = findAndRemoveMax(left, &newNode);
                 newNode->right = right;
+                newNode->left = subTree;
             } else {
-                newNode = findAndRemoveMin(right);
+                subTree = findAndRemoveMin(right, &newNode);
                 newNode->left = left;
+                newNode->right = subTree;
             }
 
             return balance(newNode);
@@ -149,16 +148,13 @@ private:
         fixHeight(pivot);
         fixCount(pivot);
 
-        switch (balanceFactor(pivot))
-        {
-            case 2:
-            {
+        switch (balanceFactor(pivot)) {
+            case 2: {
                 if (balanceFactor(pivot->right) < 0)
                     pivot->right = smallTurnRight(pivot->right);
                 return smallTurnLeft(pivot);
             }
-            case -2:
-            {
+            case -2: {
                 if (balanceFactor(pivot->left) > 0)
                     pivot->left = smallTurnLeft(pivot->left);
                 return smallTurnRight(pivot);
@@ -208,12 +204,9 @@ int main(int argc, const char* argv[]) {
         cin >> cmd >> value;
 
         if (cmd == 1) {
-            tree.Add(value);
-            cout << "OK";
-            //cout << tree.getIndex(value);
+            cout << tree.Add(value) << endl;
         } else {
-            tree.Delete(value);//tree.DeleteByIndex(value);
-            cout << "DEL OK";
+            tree.Delete(value);
         }
     }
 
