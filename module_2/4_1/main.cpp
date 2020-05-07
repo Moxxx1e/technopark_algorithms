@@ -3,6 +3,15 @@
 using namespace std;
 
 template <typename T>
+class Comparator {
+public:
+    bool operator () (const T& left, const T& right) {
+        return left < right;
+    }
+};
+
+
+template <typename T>
 class AVLTree {
     struct TreeNode {
         explicit TreeNode(T value)
@@ -80,11 +89,11 @@ private:
     TreeNode* addInternal(TreeNode* node, const T& element, int& index) {
         if (!node)
             return new TreeNode(element);
-        if (element < node->value) {
+        if (cmp(element, node->value)) {
             index += getCount(node->right) + 1;
             node->left = addInternal(node->left, element, index);
         }
-        else if (element > node->value)
+        else if (!cmp(element, node->value))
             node->right = addInternal(node->right, element, index);
 
         return balance(node);
@@ -191,6 +200,7 @@ private:
     }
 
     TreeNode* root;
+    Comparator<T> cmp;
 };
 
 int main(int argc, const char* argv[]) {
